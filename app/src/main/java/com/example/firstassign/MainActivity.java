@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.login_screen);
 
 
- //below line is for getting instance of our FirebaseAuth.
+        //below line is for getting instance of our FirebaseAuth.
         mAuth = FirebaseAuth.getInstance();
         //initializing variables for button and Edittext.
         edtPhone = findViewById(R.id.idEdtPhoneNumber);
@@ -56,20 +56,28 @@ public class MainActivity extends AppCompatActivity {
         generateOTPBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String moblie = "+91"+edtPhone.getText().toString().trim();
                 //below line is for checking weather the user has entered his mobile number or not.
-                if (TextUtils.isEmpty(edtPhone.getText().toString()) ){
+                if (TextUtils.isEmpty(edtPhone.getText().toString())) {
                     //when mobile number text field is empty displaying a toast message.
+                    edtPhone.setError("Enter valid Mobile Number");
+                    edtPhone.requestFocus();
                     Toast.makeText(MainActivity.this, "Please enter a valid phone number.", Toast.LENGTH_SHORT).show();
 
-                }else{
+                } else {
                     //if the text field is not empty we are calling our send OTP method for gettig OTP from Firebase.
-                    String phone ="+91"+edtPhone.getText().toString();
-                    sendVerificationCode(phone);
+                    Intent intentOtp = new Intent(MainActivity.this, VerifyOtp.class);
+                    intentOtp.putExtra("moblie", moblie);
+                    startActivity(intentOtp);
+
+
+                    //  sendVerificationCode(phone);
                 }
             }
         });
 
-        //initializing on click listner for verify otp button
+       /* //initializing on click listner for verify otp button
         verifyOTPBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,10 +180,9 @@ public class MainActivity extends AppCompatActivity {
         //after getting credential we are calling sign in method.
         signInWithCredential(credential);
     }
+*/
 
 
-
-        
-        
+    }
         
 }
