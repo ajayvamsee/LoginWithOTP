@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String moblie = "+91"+edtPhone.getText().toString().trim();
+                String moblie = edtPhone.getText().toString().trim();
                 //below line is for checking weather the user has entered his mobile number or not.
                 if (TextUtils.isEmpty(edtPhone.getText().toString())) {
                     //when mobile number text field is empty displaying a toast message.
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     //if the text field is not empty we are calling our send OTP method for gettig OTP from Firebase.
                     Intent intentOtp = new Intent(MainActivity.this, VerifyOtp.class);
-                    intentOtp.putExtra("moblie", moblie);
+                    intentOtp.putExtra("moblienumber", moblie);
                     startActivity(intentOtp);
 
 
@@ -77,110 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-       /* //initializing on click listner for verify otp button
-        verifyOTPBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //validating if the OTP text field is empty or not.
-                if (TextUtils.isEmpty(edtOTP.getText().toString())){
-                    //if the OTP text field is empty display a message to user to enter OTP
-                    Toast.makeText(MainActivity.this, "Please enter OTP", Toast.LENGTH_SHORT).show();
-                }else{
-                    //if OTP field is not empty calling method to verify the OTP.
-                    verifyCode(edtOTP.getText().toString());
-                }
 
-            }
-        });
-
-
-
-    }
-
-    private void signInWithCredential(PhoneAuthCredential credential) {
-        //inside this method we are checking if the code entered is correct or not.
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            //if the code is correct and the task is succesful we are sending our user to new activity.
-
-                            Intent i =new Intent(MainActivity.this,HomeActivity.class);
-                            startActivity(i);
-                            finish();
-
-                        } else {
-                            //if the code is not correct then we are displaying an error message to the user.
-                            Toast.makeText(MainActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-    }
-
-
-
-
-    private void sendVerificationCode(String number) {
-        //this method is used for getting OTP on user phone number.
-
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                number,//first parameter is user's mobile number
-                60,//second parameter is time limit for OTP verification which is 60 seconds in our case.
-                TimeUnit.SECONDS,// third parameter is for initializing units for time period which is in seconds in our case.
-                  TaskExecutors.MAIN_THREAD,//this task will be excuted on Main thread.
-                mCallBack//we are calling callback method when we recieve OTP for auto verification of user.
-        );
-
-    }
-
-    //callback method is called on Phone auth provider.
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
-            //initializing our callbacks for on verification callback method.
-            mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-        //below method is used when OTP is sent from Firebase
-        @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            super.onCodeSent(s, forceResendingToken);
-            //when we recieve the OTP it contains a unique id wich we are storing in our string which we have already created.
-            verificationId = s;
-        }
-
-        //this method is called when user recieve OTP from Firebase.
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            //below line is used for getting OTP code which is sent in phone auth credentials.
-            final String code = phoneAuthCredential.getSmsCode();
-            //checking if the code is null or not.
-            if (code != null) {
-                //if the code is not null then we are setting that code to our OTP edittext field.
-                edtOTP.setText(code);
-                //after setting this code to OTP edittext field we are calling our verifycode method.
-                verifyCode(code);
-
-            }
-
-        }
-
-
-
-        //thid method is called when firebase doesnot sends our OTP code due to any error or issue.
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            //displaying error message with firebase exception.
-            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    };
-
-    //below method is use to verify code from Firebase.
-    private void verifyCode(String code) {
-        //below line is used for getting getting credentials from our verification id and code.
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
-        //after getting credential we are calling sign in method.
-        signInWithCredential(credential);
-    }
-*/
 
 
     }

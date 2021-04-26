@@ -61,13 +61,14 @@ public class VerifyOtp extends AppCompatActivity {
 
         //get moblie number thruogh last activty by intent
         Intent intent = getIntent();
-        String mobile = intent.getStringExtra("mobile");
+        String mobile = intent.getStringExtra("moblienumber");
 
         try {
             sendVerificationCode(mobile);
         } catch (NumberParseException e) {
             e.printStackTrace();
         }
+
 
 
         //if the sms auto detection not work properly we can go through button
@@ -95,14 +96,18 @@ public class VerifyOtp extends AppCompatActivity {
     }
 
     private void sendVerificationCode(String mobile) throws NumberParseException {
-
         PhoneNumberUtil pnu=PhoneNumberUtil.getInstance();
+
+
         Phonenumber.PhoneNumber pn=pnu.parse(mobile,"IN");
+
+
         String pnE164=pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.E164);
 
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(pnE164, 60, TimeUnit.SECONDS, VerifyOtp.this, mCallbacks);
 
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(pnE164, 60, TimeUnit.SECONDS, VerifyOtp.this, mCallbacks);
     }
+
 
     //the callback to detect the verification status
     final  private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks =
