@@ -20,6 +20,7 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -95,13 +96,29 @@ public class VerifyOtp extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+        if(user!=null){
+            Intent intent=new Intent(VerifyOtp.this,HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+        else {
+            Log.d("Logout","user Logout");
+        }
+    }
+
+
     private void sendVerificationCode(String mobile) throws NumberParseException {
+
+        // these lines are used to add country code format to number which
+        // is suuported only in india bcoz we are delared direclty India code +91 in code.
+
         PhoneNumberUtil pnu=PhoneNumberUtil.getInstance();
-
-
         Phonenumber.PhoneNumber pn=pnu.parse(mobile,"IN");
-
-
         String pnE164=pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.E164);
 
 
@@ -125,6 +142,9 @@ public class VerifyOtp extends AppCompatActivity {
                 editTextCode.setText(code);
                 //verifying the code
                 verifyVerificationCode(code);
+            }
+            else {
+                Toast.makeText(VerifyOtp.this, "No Otp", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -156,18 +176,20 @@ public class VerifyOtp extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(VerifyOtp.this, new OnCompleteListener<AuthResult>() {
                     @Override
+
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             //verification successful we will start the profile activity
                             Intent intent = new Intent(VerifyOtp.this, HomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
                         } else {
 
                             //verification unsuccessful.. display an error message
 
-                            String message = "Somthing is wrong, we will fix it soon...";
+                            String message = " Sorry ..! \n Somthing is went wrong, we will fix it very soon...";
 
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 message = "Invalid code entered...";

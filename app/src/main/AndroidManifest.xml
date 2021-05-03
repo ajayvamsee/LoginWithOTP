@@ -12,7 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FirstAssign">
-        <activity android:name=".VerifyOtp"></activity>
+        <activity android:name=".DashBoard"></activity>
+        <activity
+            android:name=".NavigationDrawer"
+            android:label="@string/title_activity_navigation_drawer"
+            android:theme="@style/Theme.FirstAssign.NoActionBar" />
+        <activity android:name=".VerifyOtp" />
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

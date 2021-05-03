@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         //initializing variables for button and Edittext.
         edtPhone = findViewById(R.id.idEdtPhoneNumber);
-        edtOTP = findViewById(R.id.idEdtOtp);
-        verifyOTPBtn = findViewById(R.id.idBtnVerify);
         generateOTPBtn = findViewById(R.id.idBtnGetOtp);
 
 //setting onclick listner for generate OTP button.
