@@ -1,9 +1,5 @@
 package com.example.firstassign;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +8,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskExecutors;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
@@ -35,6 +33,7 @@ public class VerifyOtp extends AppCompatActivity {
     //These are the objects needed
     //It is the verification id that will be sent to the user
     private String mVerificationId;
+    private PhoneAuthProvider.ForceResendingToken resendingToken;
 
     //The edittext to input the code
     private EditText editTextCode;
@@ -53,7 +52,7 @@ public class VerifyOtp extends AppCompatActivity {
 
 
         //hide the action bar
-        getSupportActionBar().hide();
+       // getSupportActionBar().hide();
 
 
         //initializing objects
@@ -65,8 +64,13 @@ public class VerifyOtp extends AppCompatActivity {
         String mobile = intent.getStringExtra("moblienumber");
 
         try {
+            // calling the method to send verification code provide number by the USer
             sendVerificationCode(mobile);
+
+
+            // catching some Exception here
         } catch (NumberParseException e) {
+
             e.printStackTrace();
         }
 
@@ -83,7 +87,7 @@ public class VerifyOtp extends AppCompatActivity {
                     editTextCode.requestFocus();
                     //return;
 
-                }else {
+                } else {
 
                     //verify the code entered manually
                     verifyVerificationCode(code);
@@ -97,19 +101,27 @@ public class VerifyOtp extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
-
-        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null){
-            Intent intent=new Intent(VerifyOtp.this,HomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            Intent intent = new Intent(VerifyOtp.this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-        }
-        else {
-            Log.d("Logout","user Logout");
+            finish();
+        } else {
+            //Toast.makeText(this, "User Logout", Toast.LENGTH_SHORT).show();
+            Log.d("Logout", "user Logout");
         }
     }
+
 
 
     private void sendVerificationCode(String mobile) throws NumberParseException {
@@ -117,51 +129,60 @@ public class VerifyOtp extends AppCompatActivity {
         // these lines are used to add country code format to number which
         // is suuported only in india bcoz we are delared direclty India code +91 in code.
 
-        PhoneNumberUtil pnu=PhoneNumberUtil.getInstance();
-        Phonenumber.PhoneNumber pn=pnu.parse(mobile,"IN");
-        String pnE164=pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.E164);
+        PhoneNumberUtil pnu = PhoneNumberUtil.getInstance();
+        Phonenumber.PhoneNumber pn = pnu.parse(mobile, "IN");
+        String pnE164 = pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.E164);
 
 
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(pnE164, 60, TimeUnit.SECONDS, VerifyOtp.this, mCallbacks);
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(pnE164, 60, TimeUnit.SECONDS, this, mCallbacks);
     }
 
 
     //the callback to detect the verification status
-    final  private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks =
+    final private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks =
             new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+                @Override
+                public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
 
-            //Getting the code sent by SMS
-            String code = phoneAuthCredential.getSmsCode();
+                    //Getting the code sent by SMS
+                    String code = phoneAuthCredential.getSmsCode();
 
-            //sometime the code is not detected automatically
-            //in this case the code will be null
-            //so user has to manually enter the code
-            if (code != null) {
-                editTextCode.setText(code);
-                //verifying the code
-                verifyVerificationCode(code);
-            }
-            else {
-                Toast.makeText(VerifyOtp.this, "No Otp", Toast.LENGTH_SHORT).show();
-            }
-        }
+                    //sometime the code is not detected automatically
+                    //in this case the code will be null
+                    //so user has to manually enter the code
+                    if (code != null) {
+                        editTextCode.setText(code);
+                        //verifying the code
+                        verifyVerificationCode(code);
+                    } else {
+                        Toast.makeText(VerifyOtp.this, "No Otp", Toast.LENGTH_SHORT).show();
+                    }
+                }
 
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            Toast.makeText(VerifyOtp.this, e.getMessage(), Toast.LENGTH_LONG).show();
-            Log.d("NumberFormat",e.getMessage());
-        }
+                @Override
+                public void onVerificationFailed(FirebaseException e) {
+                    Toast.makeText(VerifyOtp.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.d("NumberFormat", e.getMessage());
+                }
 
-        @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            super.onCodeSent(s, forceResendingToken);
+                // these below two methods is setting otp automatically
 
-            //storing the verification id that is sent to the user
-            mVerificationId = s;
-        }
-    };
+                @Override
+                public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                    super.onCodeSent(s, forceResendingToken);
+
+                    //storing the verification id that is sent to the user
+                    mVerificationId = s;
+
+                    resendingToken = forceResendingToken;
+                }
+
+                @Override
+                public void onCodeAutoRetrievalTimeOut(@NonNull String s) {
+                    super.onCodeAutoRetrievalTimeOut(s);
+                }
+
+            };
 
 
     private void verifyVerificationCode(String code) {
@@ -179,10 +200,11 @@ public class VerifyOtp extends AppCompatActivity {
 
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             //verification successful we will start the profile activity
                             Intent intent = new Intent(VerifyOtp.this, HomeActivity.class);
 
-                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
                         } else {
@@ -199,6 +221,7 @@ public class VerifyOtp extends AppCompatActivity {
                             snackbar.setAction("Dismiss", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+
 
                                 }
                             });
