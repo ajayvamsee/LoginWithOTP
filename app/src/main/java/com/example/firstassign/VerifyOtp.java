@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,28 +41,38 @@ public class VerifyOtp extends AppCompatActivity {
 
     Button btnsignIN;
 
+    // display user number
+    TextView moblieNumber;
+    // for resend otp
+    Button resendBtn;
+
     //firebase auth object
     private FirebaseAuth mAuth;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_otp);
 
+        //loginCurrentUser();
+
         btnsignIN = findViewById(R.id.buttonSignIn);
-
-
-        //hide the action bar
-       // getSupportActionBar().hide();
-
-
         //initializing objects
         mAuth = FirebaseAuth.getInstance();
         editTextCode = findViewById(R.id.editTextCode);
 
+        moblieNumber = findViewById(R.id.mobileNum);
+        resendBtn = findViewById(R.id.resendCode);
+
+
         //get moblie number thruogh last activty by intent
         Intent intent = getIntent();
         String mobile = intent.getStringExtra("moblienumber");
+
+        moblieNumber.setText(mobile);
+
+        Log.d("Print Moblie Number",mobile);
 
         try {
             // calling the method to send verification code provide number by the USer
@@ -73,7 +84,6 @@ public class VerifyOtp extends AppCompatActivity {
 
             e.printStackTrace();
         }
-
 
 
         //if the sms auto detection not work properly we can go through button
@@ -100,17 +110,25 @@ public class VerifyOtp extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    private void loginCurrentUser() {
 
+        FirebaseUser alreadyUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (alreadyUser != null) {
+            Intent intent = new Intent(VerifyOtp.this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, "No user exits ", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             Intent intent = new Intent(VerifyOtp.this, HomeActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -121,7 +139,6 @@ public class VerifyOtp extends AppCompatActivity {
             Log.d("Logout", "user Logout");
         }
     }
-
 
 
     private void sendVerificationCode(String mobile) throws NumberParseException {

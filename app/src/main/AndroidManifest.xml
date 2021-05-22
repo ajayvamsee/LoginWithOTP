@@ -12,25 +12,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FirstAssign">
+        <activity android:name=".JsonData"
+            android:theme="@style/Theme.FirstAssign1"
+            ></activity>
         <activity
-            android:name=".Sample.SampleAct"
-            android:theme="@style/Theme.Design.Light.NoActionBar"
-
-            />
+            android:name=".JsonData1"
+            android:theme="@style/Theme.FirstAssign1" />
         <activity android:name=".DashBoard" />
-        <activity android:name=".VerifyOtp"
-            android:theme="@style/Theme.Design.Light.NoActionBar">
-
-        </activity>
-        <activity android:name=".SplashScreen">
+        <activity
+            android:name=".VerifyOtp"
+            android:theme="@style/Theme.FirstAssign1" />
+        <activity
+            android:name=".SplashScreen"
+            android:theme="@style/Theme.AppCompat.Light">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".HomeActivity" />
+        <activity android:name=".MainActivity"
+            android:theme="@style/Theme.FirstAssign1"
+            />
+        <activity
+            android:name=".HomeActivity"
+            android:theme="@style/Theme.FirstAssign1" />
     </application>
 
 </manifest>
